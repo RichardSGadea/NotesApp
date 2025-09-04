@@ -1,0 +1,20 @@
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Logs generales
+*.log
+
+# Docker
+docker-data/
+.docker/
+*.pid
+
+# Configuración de IDEs
+.vscode/
+.idea/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
