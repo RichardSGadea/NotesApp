@@ -11,7 +11,6 @@ export default function NoteForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  // Si hay id, cargamos la nota para editar
   useEffect(() => {
     if (id) {
       setLoading(true);

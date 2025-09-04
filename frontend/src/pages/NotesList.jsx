@@ -8,16 +8,20 @@ export default function NotesList() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [error, setError] = useState(false);
 
   const fetchNotes = async () => {
     try {
+      setError(false);
       const res = await axios.get(`/api/notes?q=${search}&page=${page}`);
-      setNotes(res.data.data);
+      setNotes(Array.isArray(res.data.data) ? res.data.data : []);
       setLastPage(res.data.meta?.last_page || 1);
       setLoading(false);
     } catch (err) {
+      console.error("Error al cargar notas:", err);
+      setError(true);
       setLoading(true);
-      setTimeout(fetchNotes, 2000);
+      setTimeout(fetchNotes, 3000); // reintento automático cada 3s
     }
   };
 
@@ -77,10 +81,15 @@ export default function NotesList() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="flex flex-col items-center h-40 justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+          {error && (
+            <p className="text-sm text-red-500">
+              Error al cargar notas. Reintentando...
+            </p>
+          )}
         </div>
-      ) : notes.length === 0 ? (
+      ) : !notes || notes.length === 0 ? (
         <p className="text-center text-gray-500">No hay notas disponibles</p>
       ) : (
         <>
@@ -93,7 +102,9 @@ export default function NotesList() {
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold">{note.title}</h3>
                   {note.content && (
-                    <p className="text-gray-600 text-sm truncate">{note.content}</p>
+                    <p className="text-gray-600 text-sm truncate">
+                      {note.content}
+                    </p>
                   )}
                   <small className="text-gray-400 text-xs block mt-1">
                     {new Date(note.created_at).toLocaleString()}
